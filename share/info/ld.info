@@ -4427,6 +4427,38 @@ between them, so the following will produce an error from the linker:
    whereas this will work:
      SECTIONS { .text : { *(.text) ; LONG(1) } .data : { *(.data) } } 
 
+   You can include a zero-terminated string in an output section by
+using 'ASCIZ'.  The keyword is followed by a string which is stored at
+the current value of the location counter including adding a zero byte
+at the end.  Any length of string is supported by this directive.
+
+   You can include a fixed size string in an output section by using
+'ASCII'.  The keyword is followed by a size enclosed in parentheses and
+then a string.  The string is stored at the current value of the
+location counter and zero bytes are added at the end to fill up to the
+specified size.  Note the fill value is ignored for this padding.
+
+   If the string is too long, a warning is issued and the string is
+truncated.  The string will still be zero-terminated in this case.
+
+   If the expression evaluates to zero then the directive will be
+treated as if it were 'ASCIZ' instead.
+
+   If the string in an 'ASCII' or 'ASCIZ' command includes spaces it
+must be enclosed in double quotes.
+
+   The string can have C escape characters like '\n', '\r', '\t' and
+octal numbers.  The '\"' escape is not supported.  Nor are escaped hex
+values.
+
+   Example 1: This is string of 16 characters and will create a 32 byte
+area:
+       ASCII (32) "This is 16 bytes"
+
+   Example 2: This is a string of 16 characters and will create a 17
+byte area:
+       ASCIZ "This is 16 bytes"
+
    You may use the 'FILL' command to set the fill pattern for the
 current section.  It is followed by an expression in parentheses.  Any
 otherwise unspecified regions of memory within the section (for example,
@@ -5981,6 +6013,9 @@ support is implemented with a linker plugin.
 
    Currently there is only one plugin shipped by default, but more may
 be added here later.
+
+   Plugins are enabled via the use of the '-plugin NAME' command line
+option.  *Note Options::
 
 * Menu:
 
@@ -8826,6 +8861,10 @@ LD Index
 * arithmetic operators:                  Operators.          (line    6)
 * ARM interworking support:              ARM.                (line    6)
 * ARM1176 erratum workaround:            ARM.                (line  108)
+* ASCII (EXPRESSION) ``STRING'':         Output Section Data.
+                                                             (line   39)
+* ASCIZ ``STRING'':                      Output Section Data.
+                                                             (line   39)
 * ASSERT:                                Miscellaneous Commands.
                                                              (line    9)
 * assertion in linker script:            Miscellaneous Commands.
@@ -8954,7 +8993,7 @@ LD Index
 * fill pattern, entire section:          Output Section Fill.
                                                              (line    6)
 * FILL(EXPRESSION):                      Output Section Data.
-                                                             (line   39)
+                                                             (line   71)
 * finalization function:                 Options.            (line  338)
 * first input file:                      File Commands.      (line   88)
 * first instruction:                     Entry Point.        (line    6)
@@ -8991,7 +9030,7 @@ LD Index
 * HIDDEN:                                HIDDEN.             (line    6)
 * holes:                                 Location Counter.   (line   12)
 * holes, filling:                        Output Section Data.
-                                                             (line   39)
+                                                             (line   71)
 * HPPA multiple sub-space stubs:         HPPA ELF32.         (line    6)
 * HPPA stub grouping:                    HPPA ELF32.         (line   12)
 * image base:                            Options.            (line 2421)
@@ -9140,6 +9179,8 @@ LD Index
                                                              (line    6)
 * output section data:                   Output Section Data.
                                                              (line    6)
+* output section strings:                Output Section Data.
+                                                             (line   39)
 * OUTPUT(FILENAME):                      File Commands.      (line   70)
 * OUTPUT_ARCH(BFDARCH):                  Miscellaneous Commands.
                                                              (line  121)
@@ -9340,7 +9381,7 @@ LD Index
 * uninitialized data placement:          Input Section Common.
                                                              (line    6)
 * unspecified memory:                    Output Section Data.
-                                                             (line   39)
+                                                             (line   71)
 * usage:                                 Options.            (line 1484)
 * USE_BLX:                               ARM.                (line   73)
 * using a DEF file:                      WIN32.              (line   52)
@@ -9402,62 +9443,62 @@ Node: Input Section Common191107
 Node: Input Section Keep192589
 Node: Input Section Example193079
 Node: Output Section Data194490
-Node: Output Section Keywords197269
-Node: Output Section Discarding200836
-Node: Output Section Attributes202726
-Node: Output Section Type203845
-Node: Output Section LMA206148
-Node: Forced Output Alignment209219
-Node: Forced Input Alignment209648
-Node: Output Section Constraint210036
-Node: Output Section Region210464
-Node: Output Section Phdr210897
-Node: Output Section Fill211561
-Node: Overlay Description212703
-Node: MEMORY217148
-Node: PHDRS221754
-Node: VERSION227080
-Node: Expressions235171
-Node: Constants236184
-Node: Symbolic Constants237058
-Node: Symbols237609
-Node: Orphan Sections238356
-Node: Location Counter239941
-Node: Operators244375
-Node: Evaluation245297
-Node: Expression Section246661
-Node: Builtin Functions250631
-Node: Implicit Linker Scripts258965
-Node: Plugins259740
-Node: libdep Plugin260200
-Node: Machine Dependent261997
-Node: H8/300263085
-Node: M68HC11/68HC12265158
-Node: ARM266605
-Node: HPPA ELF32278715
-Node: M68K280338
-Node: MIPS281247
-Node: MMIX282363
-Node: MSP430283528
-Node: NDS32285441
-Node: Nios II286405
-Node: PowerPC ELF32287721
-Node: PowerPC64 ELF64290552
-Node: S/390 ELF300310
-Node: SPU ELF300657
-Node: TI COFF303285
-Node: WIN32303811
-Node: Xtensa323958
-Node: BFD327401
-Node: BFD outline328859
-Node: BFD information loss330147
-Node: Canonical format332673
-Node: Reporting Bugs337001
-Node: Bug Criteria337695
-Node: Bug Reporting338394
-Node: MRI345429
-Node: GNU Free Documentation License349900
-Node: LD Index375037
+Node: Output Section Keywords198615
+Node: Output Section Discarding202182
+Node: Output Section Attributes204072
+Node: Output Section Type205191
+Node: Output Section LMA207494
+Node: Forced Output Alignment210565
+Node: Forced Input Alignment210994
+Node: Output Section Constraint211382
+Node: Output Section Region211810
+Node: Output Section Phdr212243
+Node: Output Section Fill212907
+Node: Overlay Description214049
+Node: MEMORY218494
+Node: PHDRS223100
+Node: VERSION228426
+Node: Expressions236517
+Node: Constants237530
+Node: Symbolic Constants238404
+Node: Symbols238955
+Node: Orphan Sections239702
+Node: Location Counter241287
+Node: Operators245721
+Node: Evaluation246643
+Node: Expression Section248007
+Node: Builtin Functions251977
+Node: Implicit Linker Scripts260311
+Node: Plugins261086
+Node: libdep Plugin261642
+Node: Machine Dependent263439
+Node: H8/300264527
+Node: M68HC11/68HC12266600
+Node: ARM268047
+Node: HPPA ELF32280157
+Node: M68K281780
+Node: MIPS282689
+Node: MMIX283805
+Node: MSP430284970
+Node: NDS32286883
+Node: Nios II287847
+Node: PowerPC ELF32289163
+Node: PowerPC64 ELF64291994
+Node: S/390 ELF301752
+Node: SPU ELF302099
+Node: TI COFF304727
+Node: WIN32305253
+Node: Xtensa325400
+Node: BFD328843
+Node: BFD outline330301
+Node: BFD information loss331589
+Node: Canonical format334115
+Node: Reporting Bugs338443
+Node: Bug Criteria339137
+Node: Bug Reporting339836
+Node: MRI346871
+Node: GNU Free Documentation License351342
+Node: LD Index376479
 
 End Tag Table
 
